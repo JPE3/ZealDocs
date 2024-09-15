@@ -46,9 +46,12 @@ How To Setup and Run The API Server
 3. Copy the code files to the folder. 
 
 #### C. Configuring the API Server Settings and the SQL Server database
-1. For security reasons the API code files uploaded to Github do not contain the settings required to log into the database or the required API key.
-2. Initially there will be no `C:\Zeal.API\(settings)\settings.ini` in the API code files. Get the file from Aether or create it as described below. 
-   Note that the name of the settings folder is surrounded with parentheses.
+1. For security reasons the initially supplied API code files may not contain the settings required to log into the database or the required API key.
+2. If there is no `C:\Zeal.API\(settings)\settings.ini` in the API code files, Get the file from Aether or create it as described below. 
+   Note that the name of the settings folder is surrounded with parentheses. The name and path of the folder must be: 
+   ```
+   <API path on your machine>\(settings)\settings.ini
+   ```
 3. The contents of the `settings.ini` file looks like this:
 ```
 [DATABSE]
@@ -71,7 +74,7 @@ api_key                = ThisIsMyApIKeyvalue1234567890MAryHadALittleLambBlalabla
 1. Open a command line window.
 2. From the command line type in `C:` and then press enter.
 3. From the command line type in `CD \Zeal.API\API` and then press enter.
-4. From the command line type in `python -m uvicorn Zeal_API:app --reload --port <the port number you want to use> --host 0.0.0.0` and then press enter. [^5][^6]
+4. From the command line type in `python -m uvicorn Zeal_API:app --reload --host 0.0.0.0 --port <host port> ` and then press enter. [^5][^6]
 5. As long as the command line is running the uvicorn process the API server will be available. [^7]
 6. If ANSI escape characters are not correctly displaying colors when launching the API server in the previous step, add the folllowing Windows Registry key to your API server machine:
 ```
