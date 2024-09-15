@@ -26,18 +26,20 @@ API in their Zoho code.
 How To Setup and Run The API Server
 -----------------------------------
 #### A. Setting Up The Environment To Host the API
-1. On the designated API server install python. This app was developped with version 3.12.2. During the install ensure that you let the installer update your environment variables.[^1]
-2. Run `pip install pyodbc`  Microsoft's preferred SQL Server library.
-3. Run `pip install fastapi` Simple to use API framework.
-4. Run `pip install uvicorn` The web server that the API will be running on.
-5. To support HTTPS you need to install a security certificate on the server. [^2]
-6. Ensure that port `1433` is open to local traffic on the SQL Server server's firewal. If your installation of SQL Server is not using the standard port substitute `1433` for the 
+1. Python may alread be installed on your on the designated API server. To check enter the following command from the command prompt: `python --version`
+2. If it's not installed download and install it from the [Python web site](https://www.python.org/downloads/).  This app was developped with version 3.12.2. 
+   **During the install ensure that you let the installer update your environment variables**.[^1]
+3. Run `pip install pyodbc`  Microsoft's preferred SQL Server library.
+4. Run `pip install fastapi` Simple to use API framework.
+5. Run `pip install uvicorn` The web server that the API will be running on.
+6. To support HTTPS you need to install a security certificate on the server. [^2]
+7. Ensure that port `1433` is open to local traffic on the SQL Server server's firewal. If your installation of SQL Server is not using the standard port substitute `1433` for the 
    port that you are using.  
-7. If you host the API itself on a different server than where your SQL Server database is installed:
+8. If you host the API itself on a different server than where your SQL Server database is installed:
    1. Ensure that the server's firewall opens the SQL Server port.[^3]
    2. Ensure that the all routers on the server's subnet are forwarding traffic for the port that SQL Server is using. [^3]
-8. Ensure that the port that the API is using is open on the API server's firewal. [^3] [^4] 
-9. Ensure that the all routers on the API server's subnet are forwarding traffic for port the API port. [^3]
+9. Ensure that the port that the API is using is open on the API server's firewal. [^3] [^4] 
+10. Ensure that the all routers on the API server's subnet are forwarding traffic for port the API port. [^3]
 
 
 #### B. Installing the API Server Code. 
