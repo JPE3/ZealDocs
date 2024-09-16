@@ -111,7 +111,7 @@ See the footnote on HTTPS and IP address. [^4]
   4.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/Product/322
   5.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/VehicleSales/list?after_id=99
   6.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/VehicleSale/100
-  7.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/PartQty/list?after_id=15736
+  7.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/PartsQty/list?after_id=15736
   8.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/Parts/list?after_id=7000
   9.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/Part/7001
   10. GET  http://<host address>:<host port>/api/SQL-to-Zoho/PartBins/list?part_id=7001
