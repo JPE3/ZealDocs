@@ -96,7 +96,7 @@ API Specification Docs
 ```
 - For details on how to set up SQL Server to use its Change Data Capture (CDC) system to track changes, see the 
 [SQL Server configuration script](https://github.com/JPE3/ZealDocs/blob/main/Script.SetupCDC.sql). 
-- For details on how the CDC tables are used to retrieve a record of changes see the comments in [the query that gets that data](https://github.com/JPE3/ZealDocs/blob/main/Script.SetupCDC.sql).
+- For details on how the CDC tables are used to retrieve a record of changes see the comments in [the query that gets that data](https://github.com/JPE3/ZealDocs/blob/main/GetPartsCDC.sql).
 
 Sample API Calls 
 ----------------
