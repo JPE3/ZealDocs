@@ -20,7 +20,7 @@ only client for this API set.
 Most of these instructions are for Zeal to explain to them how to setup and install the API. These instructions are also helpful to the Zoho developer that will be using this 
 API in their Zoho code. 
 
--Jonathan Elkins 2024/09/15
+-Updated by Jonathan Elkins on 2024/09/15
 
 
 How To Setup and Run The API Server
@@ -95,7 +95,7 @@ API Specification Docs
    http://<host address>:<host port>/redoc 
 ```
 - For details on how to set up SQL Server to use its Change Data Capture (CDC) system to track changes, see the 
-[SQL Server configuration script](https://github.com/JPE3/ZealAPI/blob/main/SQL/Script.SetupCDC.sql). 
+[SQL Server configuration script](https://github.com/JPE3/ZealDocs/blob/main/Script.SetupCDC.sql). 
 - For details on how the CDC tables are used to retrieve a record of changes see the comments in [the query that gets that data](https://github.com/JPE3/ZealDocs/blob/main/Script.SetupCDC.sql).
 
 Sample API Calls 
