@@ -40,7 +40,7 @@ How To Setup and Run The API Server
 8. Ensure that the port that the API is using is open on the API server's firewal. [^2] [^3] 
 9. Ensure that the all routers on the API server's subnet are forwarding traffic for port the API port. [^2]
 
-### B. Environment Setup - HTTPS With Self Signed Certificate (==for initial API development only==)
+### B. Environment Setup - HTTPS With Self Signed Certificate (**for initial API development only**)
 Appropriate for testing HTTPS during development but not for production. Browsers will not trust self signed certificates.
 1. Open Command line window:
    - `Run Windows CLI`
