@@ -25,29 +25,58 @@ API in their Zoho code.
 
 How To Setup and Run The API Server
 -----------------------------------
-#### A. Setting Up The Environment To Host the API
+### A. Environment Setup - Installing Python and Configuring Ports
 1. Python may alread be installed on your on the designated API server. To check enter the following command from the command prompt: `python --version`
 2. If it's not installed download and install it from the [Python web site](https://www.python.org/downloads/).  This app was developped with version 3.12.2. 
    **During the install ensure that you let the installer update your environment variables**.[^1]
 3. Run `pip install pyodbc`  Microsoft's preferred SQL Server library.
 4. Run `pip install fastapi` Simple to use API framework.
 5. Run `pip install uvicorn` The web server that the API will be running on.
-6. To support HTTPS you need to install a security certificate on the server. [^2]
-7. Ensure that port `1433` is open to local traffic on the SQL Server server's firewal. If your installation of SQL Server is not using the standard port substitute `1433` for the 
+6. Ensure that port `1433` is open to local traffic on the SQL Server server's firewal. If your installation of SQL Server is not using the standard port substitute `1433` for the 
    port that you are using.  
-8. If you host the API itself on a different server than where your SQL Server database is installed:
-   1. Ensure that the server's firewall opens the SQL Server port.[^3]
-   2. Ensure that the all routers on the server's subnet are forwarding traffic for the port that SQL Server is using. [^3]
-9. Ensure that the port that the API is using is open on the API server's firewal. [^3] [^4] 
-10. Ensure that the all routers on the API server's subnet are forwarding traffic for port the API port. [^3]
+7. If you host the API itself on a different server than where your SQL Server database is installed:
+   1. Ensure that the server's firewall opens the SQL Server port.[^2]
+   2. Ensure that the all routers on the server's subnet are forwarding traffic for the port that SQL Server is using. [^2]
+8. Ensure that the port that the API is using is open on the API server's firewal. [^2] [^3] 
+9. Ensure that the all routers on the API server's subnet are forwarding traffic for port the API port. [^2]
+
+### B. Environment Setup - HTTPS With Self Signed Certificate (==for initial API development only==)
+Appropriate for testing HTTPS during development but not for production. Browsers will not trust self signed certificates.
+1. Open Command line window:
+   - `Run Windows CLI`
+2. Goto drive where certificate will be generated:
+   - `C:`                                                                                     
+3. CD to folder where you want to store the generated files:
+   - `CD C:\Zeal.API\(settings)\https_cert_self_signed`                                                              
+4. Generate a private key:
+   - `openssl genrsa -out self_signed_server.key 2048`
+5. Remove encryption from the key:
+   - `openssl rsa -in self_signed_server.key -out self_signed_server.key`                                             
+6. Generate a Certificate Signing Request (CSR):
+   - `openssl req -sha256 -new -key self_signed_server.key -out self_signed_server.csr -subj '//CN=localhost'`        
+7. Generate a self-signed SSL certificate for the API server:
+   - `openssl x509 -req -sha256 -days 365 -in self_signed_server.csr -signkey self_signed_server.key -out self_signed_server.crt` 
 
 
-#### B. Installing the API Server Code. 
+### C. Environment Setup - HTTPS With CA Certificate (==for Zoho development and production==)
+The Azure server now (2024/09/22) uses HTTPS and has been assigned a domain.
+The following instructions are how an SSL certificate was created for the Azure server and 
+could be created for Zeal's production server.
+
+1. Acquire a domain name and set DNS to point at Azure Zoho development server. 
+2. Set the DNS "A" record on the name server for the domain to point at the API server. 
+3. Create an SSL certificate for the domain. Jonathan used  [Let's Encript](https://letsencrypt.org/)
+   which offers free SSl certificates created and installed using [Certbot](https://certbot.eff.org/). 
+   See the `..\(settings)\https_cert_azure\README.md` for details about `certbot`.
+4. Once a certificate and private key are generated the python API server startup must 
+   have parameters set to use the certificate and private key. See Section **F. Running The API Server** for details.
+
+### D. Environment Setup - Installing the API Server Code. 
 1. Create a folder on the API server. Give it any name you want. For these instructions I'll assume that the the folder you created is called `Zeal.API` and it's located under the root of your `C:\` drive.
 2. Get the API code files from Aether Automation. Contact Jonathan Elkins at jonathan.elkins@gmail.com or production@aetherautomation.com.
 3. Copy the code files to the folder. 
 
-#### C. Configuring the API Server Settings and the SQL Server database
+### E. Environment Setup - Configuring the API Server Settings and the SQL Server Database
 1. For security reasons the initially supplied API code files may not contain the settings required to log into the database or the required API key.
 2. If there is no `C:\Zeal.API\(settings)\settings.ini` in the API code files, Get the file from Aether or create it as described below. 
    Note that the name of the settings folder is surrounded with parentheses. The name and path of the folder must be: 
@@ -73,13 +102,16 @@ api_key                = Get API Key value from Jonathan.
 5. Run SQL Server script `C:\Zeal.API\SQL\Script.SetupCDC.sql` to set up Change Data Capture (CDC) for tables `tbl_Parts`, `tbl_PartsLoc`, and `tbl_Localisation`.
    ==**Important**: Have a conversation with Jonathan before doing this step.==
 
-#### D. Running The API Server. 
+### F. Running The API Server. 
 1. Open a command line window.
-2. From the command line type in `C:` and then press enter.
-3. From the command line type in `CD \Zeal.API\API` and then press enter.
-4. From the command line type in `python -m uvicorn Zeal_API:APP --reload --host 0.0.0.0 --port <host port> ` and then press enter. [^5][^6]
-5. As long as the command line is running the uvicorn process the API server will be available. [^7]
-6. If ANSI escape characters are not correctly displaying colors when launching the API server in the previous step, add the folllowing Windows Registry key to your API server machine:
+2. `C:`
+3. `CD \Zeal.API\API`
+4. For **HTTPS** : `python -m uvicorn Zeal_API:app --reload --host 0.0.0.0 --port <host port> --ssl-certfile <cert file> --ssl-keyfile <private key file>` [^4][^5]
+5. For **HTTP**  : `python -m uvicorn Zeal_API:APP --reload --host 0.0.0.0 --port <host port>` [^4][^5]
+6. As long as the command line window is open and is running the uvicorn process the API server will be available. [^6]
+#### Notes
+- There is also a batch file (`Zeal.API\StartZealAPI.bat`) that will do steps 1. to 4. automatically. 
+- If ANSI escape characters are not correctly displaying colors when launching the API server, add the folllowing Windows Registry key to your API server machine:
 ```
 [HKEY_CURRENT_USER\Console]
 "VirtualTerminalLevel"=dword:00000001
@@ -90,10 +122,10 @@ API Specification Docs
 ----------------------
 - To see a workflow diagram of how this API and Zoho are related [see this LucidChart](https://lucid.app/lucidchart/9a5eb720-7802-42d9-b21c-f15754faf382/edit?viewport_loc=-597%2C-3199%2C5637%2C2421%2CzJ-_WMjNL.gc&invitationId=inv_c1d1d086-0768-409a-aa47-b2222b984802).
 - Detailed API specifications can be found [here](https://docs.google.com/spreadsheets/d/1j97nVWJLwiN8HdlcScTAOASkk532TB8mAmaI4VD9320/edit?usp=sharing).
-- The links that follow are documentation generated by the FastAPI framework: [^4]
+- The links that follow are documentation generated by the FastAPI framework: [^3]
 ```
-   http://<host address>:<host port>/docs  
-   http://<host address>:<host port>/redoc 
+   https://<host address>:<host port>/docs  
+   https://<host address>:<host port>/redoc 
 ```
 - For details on how to set up SQL Server to use its Change Data Capture (CDC) system to track changes, see the 
 [SQL Server configuration script](https://github.com/JPE3/ZealDocs/blob/main/Script.SetupCDC.sql). 
@@ -101,28 +133,28 @@ API Specification Docs
 
 Sample API Calls 
 ----------------
-See the footnote on HTTPS and IP address. [^4]
+See the footnote on HTTPS and IP address. [^3]
 
 Because API keys have been implemented for all endpoints you need to use a tool like [Postman](https://www.postman.com/) or [curl](https://curl.se/docs/manpage.html) to add the api key header to all GETs and POSTs listed below.
 
 Here is a sample `curl` command for the `testquery` end point:
 ```
-   curl --header "X-API-Key: type the api key here" http://127.1.1.1:8000/api/testquery
+   curl --header "X-API-Key: type the api key here" https://127.1.1.1:8000/api/testquery
 ```
 All API End Points currently implemented:
 ```
-  1.  GET  http://<host address>:<host port>/api/hello?name=jonathan   
-  2.  GET  http://<host address>:<host port>/api/testquery
-  3.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/Customer/32
-  4.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/Product/322
-  5.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/VehicleSales/list?after_id=99
-  6.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/VehicleSale/100
-  7.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/PartsQty/list?after_id=15736
-  8.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/Parts/list?after_id=7000
-  9.  GET  http://<host address>:<host port>/api/SQL-to-Zoho/Part/7001
-  10. GET  http://<host address>:<host port>/api/SQL-to-Zoho/PartBins/list?part_id=7001
-  11. GET  http://<host address>:<host port>/api/SQL-to-Zoho/PartsCDC/list?after_timestamp=2024-09-07T23:59:59.999
-  12. POST http://<host address>:<host port>/api/Zoho-to-SQL/PartQty/ 
+  1.  GET  https://<host address>:<host port>/api/hello?name=jonathan   
+  2.  GET  https://<host address>:<host port>/api/testquery
+  3.  GET  https://<host address>:<host port>/api/SQL-to-Zoho/Customer/32
+  4.  GET  https://<host address>:<host port>/api/SQL-to-Zoho/Product/322
+  5.  GET  https://<host address>:<host port>/api/SQL-to-Zoho/VehicleSales/list?after_id=99
+  6.  GET  https://<host address>:<host port>/api/SQL-to-Zoho/VehicleSale/100
+  7.  GET  https://<host address>:<host port>/api/SQL-to-Zoho/PartsQty/list?after_id=15736
+  8.  GET  https://<host address>:<host port>/api/SQL-to-Zoho/Parts/list?after_id=7000
+  9.  GET  https://<host address>:<host port>/api/SQL-to-Zoho/Part/7001
+  10. GET  https://<host address>:<host port>/api/SQL-to-Zoho/PartBins/list?part_id=7001
+  11. GET  https://<host address>:<host port>/api/SQL-to-Zoho/PartsCDC/list?after_timestamp=2024-09-07T23:59:59.999
+  12. POST https://<host address>:<host port>/api/Zoho-to-SQL/PartQty/ 
            Here is a sample body to use with this POST API. Use curl or Postman to add this body to the call:
                {
                    "delta"               : 10,
@@ -136,11 +168,10 @@ All API End Points currently implemented:
 ```
 
 [^1]: This repository contains, in folder `(setup)`, an install copy of python version 3.12.5.
-[^2]: Instructions to follow. 
-[^3]: For added security, when opening firewall and router ports for the SQL Server and API hosts, determine what the IP address calling these services will be. Set the source to be that address only. 
-[^4]: As of 2024/09/15 a test version of the API is available on the Azure test host. Get the `<host address>`, `<host port>`, and API key from Jonathan. The test API is connected to a test copy of Zeal's SQL 
+[^2]: For added security, when opening firewall and router ports for the SQL Server and API hosts, determine what the IP address calling these services will be. Set the source to be that address only. 
+[^3]: As of 2024/09/22 a test version of the API is available on the Azure test host. Get the `<host address>`, `<host port>`, and API key from Jonathan. The test API is connected to a test copy of Zeal's SQL 
       Server database. Aether's Zoho developer will use this host during Zoho development. 
-      Note that the API is now using an API key as authentication. It has not yet been implemented with HTTPS. 
-[^5]: For dev work and testing use `uvicorn`. For production use `gunicorn`. Instructions for `gunicorn` to follow. 
-[^6]: Host = 0.0.0.0 means listen for requests from any ip4 address. For added security determine what the IP address calling these services will be. Set the host to be that address only. 
-[^7]: You will probably want to configure your API server to start the API automatically at startup. I have created a batch file that I schedule to run at startup using Task Scheduler.
+      Note that the API is now using an API key as authentication and has been implemented as HTTPS. 
+[^4]: For dev work and testing use `uvicorn`. For production use `gunicorn`. Instructions for `gunicorn` to follow. 
+[^5]: Host = 0.0.0.0 means listen for requests from any ip4 address. For added security determine what the IP address calling these services will be. Set the host to listen on that address only. 
+[^6]: You will probably want to configure your API server to start the API automatically at startup. I have created a batch file that I schedule to run at startup using Task Scheduler.
