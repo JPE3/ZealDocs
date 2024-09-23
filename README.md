@@ -40,8 +40,9 @@ How To Setup and Run The API Server
 8. Ensure that the port that the API is using is open on the API server's firewal. [^2] [^3] 
 9. Ensure that the all routers on the API server's subnet are forwarding traffic for port the API port. [^2]
 
-### B. Environment Setup - HTTPS With Self Signed Certificate (**for initial API development only**)
-Appropriate for testing HTTPS during development but not for production. Browsers will not trust self signed certificates.
+### B. Environment Setup - HTTPS With Self Signed Certificate 
+***Appropriate for testing HTTPS during development but not for production. Browsers will not trust self signed certificates.***
+
 1. Open Command line window:
    - `Run Windows CLI`
 2. Goto drive where certificate will be generated:
@@ -58,7 +59,9 @@ Appropriate for testing HTTPS during development but not for production. Browser
    - `openssl x509 -req -sha256 -days 365 -in self_signed_server.csr -signkey self_signed_server.key -out self_signed_server.crt` 
 
 
-### C. Environment Setup - HTTPS With CA Certificate (==for Zoho development and production==)
+### C. Environment Setup - HTTPS With CA Certificate 
+***Appropriate for the target production server and currrently implemented on the Azure Zoho development server***
+ 
 The Azure server now (2024/09/22) uses HTTPS and has been assigned a domain.
 The following instructions are how an SSL certificate was created for the Azure server and 
 could be created for Zeal's production server.
